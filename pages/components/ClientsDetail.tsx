@@ -1,13 +1,16 @@
 import React, { useEffect, useState } from "react";
+import { gql } from "apollo-boost";
+import { useQuery } from "react-apollo";
 
-const ClientsDetail: React.FC = props => {
-  interface IRecipeProps {
-    data?: string[];
+const DEMO_DEFAULTS_QUERY = gql`
+  # Write your query or mutation here
+  query Query {
+    hello
   }
+`;
 
-  interface IRecipeState {}
-
-  const [data, setData] = useState<any>([]);
+const ClientsDetail: React.FC = () => {
+  const [data, setData] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
   async function fetchMyAPI() {
@@ -24,23 +27,29 @@ const ClientsDetail: React.FC = props => {
     fetchMyAPI();
   }, []);
 
-  console.log(data);
+  const { data: demoDefaults, loading, error: demoDefaultError } = useQuery(
+    DEMO_DEFAULTS_QUERY
+  );
+
+  console.log(demoDefaults);
 
   if (isLoading) {
     return <div>Loading ...</div>;
   }
   return (
-    <tbody>
-      {props.data.map(item => (
-        <tr key={item.id}>
-          <td>{item.id}</td>
-          <td>{item.firstName}</td>
-          <td>{item.lastName}</td>
-          <td>{item.email}</td>
-          <td>{item.phone}</td>
-        </tr>
-      ))}
-    </tbody>
+    <table>
+      <tbody>
+        {data.map(({ id, firstName, lastName, email, phone }, index) => (
+          <tr key={`tr-${id}-${index}`}>
+            <td>{id}</td>
+            <td>{firstName}</td>
+            <td>{lastName}</td>
+            <td>{email}</td>
+            <td>{phone}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
   );
 };
 
