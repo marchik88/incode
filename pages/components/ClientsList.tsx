@@ -1,20 +1,48 @@
 import React, { useEffect, useState } from "react";
-import { gql } from "apollo-boost";
-import { useQuery } from "react-apollo";
-import { Container, Table } from "reactstrap";
+// import { gql } from "apollo-boost";
+// import { useQuery } from "react-apollo";
+import Table from "./Table";
+import SearchInput from "./SearchInput";
 
-import * as R from "ramda";
+// const DEMO_DEFAULTS_QUERY = gql`
+//   # Write your query or mutation here
+//   query Query {
+//     hello
+//   }
+// `;
 
-const DEMO_DEFAULTS_QUERY = gql`
-  # Write your query or mutation here
-  query Query {
-    hello
-  }
-`;
+type DataProps = {
+  id: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone: string;
+};
+
+const useSearch = (data: any) => {
+  const [search, setSearch] = React.useState("");
+  const [sort, setSort] = React.useState([]);
+
+  const onSearchChange = (e: React.FormEvent<HTMLInputElement>) => {
+    const { value } = e.currentTarget;
+    setSearch(value);
+    data &&
+      setSort(
+        data.filter((item: DataProps) => item.firstName.includes(search))
+      );
+  };
+
+  return {
+    sort,
+    search,
+    onSearchChange
+  };
+};
 
 const ClientsList: React.FC = () => {
   const [data, setData] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const { search, onSearchChange, sort } = useSearch(data);
 
   async function fetchMyAPI() {
     const response = await fetch(
@@ -30,42 +58,18 @@ const ClientsList: React.FC = () => {
     fetchMyAPI();
   }, []);
 
-  const { data: demoDefaults, loading, error: demoDefaultError } = useQuery(
-    DEMO_DEFAULTS_QUERY
-  );
-
-  console.log(demoDefaults);
-
-  const onSort = (key: string) => setData(R.sortBy(R.prop(key))(data));
-
-  // const onAscSort = (key: string ) => setData(R.sortWith([R.ascend(key)])(data));
+  // const { data: demoDefaults, loading, error: demoDefaultError } = useQuery(
+  //   DEMO_DEFAULTS_QUERY
+  // );
 
   if (isLoading) {
     return <div>Loading ...</div>;
   }
   return (
-    <Table>
-      <thead>
-        <tr>
-          <th onClick={() => onSort("id")}>#</th>
-          <th onClick={() => onSort("firstName")}>First Name</th>
-          <th onClick={() => onSort("lastName")}>Last Name</th>
-          <th onClick={() => onSort("email")}>Email</th>
-          <th onClick={() => onSort("phone")}>Phone</th>
-        </tr>
-      </thead>
-      <tbody>
-        {data.map(({ id, firstName, lastName, email, phone }, index) => (
-          <tr key={`tr-${id}-${index}`}>
-            <td>{id}</td>
-            <td>{firstName}</td>
-            <td>{lastName}</td>
-            <td>{email}</td>
-            <td>{phone}</td>
-          </tr>
-        ))}
-      </tbody>
-    </Table>
+    <>
+      <SearchInput onSearchChange={onSearchChange} search={search} />
+      <Table data={!search ? data : sort} />
+    </>
   );
 };
 

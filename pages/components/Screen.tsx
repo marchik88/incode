@@ -9,7 +9,6 @@ const Screen: React.FC = () => {
     <Container>
       <Row>
         <Col xs="4">
-          <SearchInput />
           <ClientsDetail />
         </Col>
         <Col xs="8">

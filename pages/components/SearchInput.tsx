@@ -1,22 +1,23 @@
 import React, { useState } from "react";
+import { InputGroup, Input } from "reactstrap";
 
-const SearchInput: React.FC = () => {
-  const [inputValue, setInputValue] = useState("");
+type SearchProps = {
+  onSearchChange: (e: React.FormEvent<HTMLInputElement>) => void;
+  search: string;
+};
 
-  const onChangeHandler = (event: React.SyntheticEvent) => {
-    // setInputValue(event.target.value);
-    console.log(event);
-  };
-
+const SearchInput: React.FC<SearchProps> = ({ onSearchChange, search }) => {
   return (
     <div className="searchbar form-group">
-      <input
-        value={inputValue}
-        type="text"
-        className="form-control"
-        placeholder="Search people by name..."
-        onChange={onChangeHandler}
-      />
+      <InputGroup>
+        <Input
+          value={search}
+          type="text"
+          className="form-control"
+          placeholder="Search people..."
+          onChange={onSearchChange}
+        />
+      </InputGroup>
     </div>
   );
 };
