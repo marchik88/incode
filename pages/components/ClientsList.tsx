@@ -68,7 +68,13 @@ const ClientsList: React.FC = () => {
   return (
     <>
       <SearchInput onSearchChange={onSearchChange} search={search} />
-      <Table data={!search ? data : sort} />
+      <Table
+        data={data.filter((item: DataProps) =>
+          Object.values(item).some((value: string | number) =>
+            value.toString().includes(search)
+          )
+        )}
+      />
     </>
   );
 };
